@@ -1,0 +1,294 @@
+<!--
+  Multi-Purpose Tea Timer
+  Created by Claude, Anthropic's AI assistant
+  March 2026
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>Multi-Purpose Tea Timer</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Georgia', 'Times New Roman', serif;
+    background: linear-gradient(135deg, #1a1a2a 0%, #22223a 40%, #1e1e30 100%);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: #f0e6d3;
+    padding: 20px;
+    overflow: hidden;
+  }
+
+  h1 {
+    font-size: 2rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: #ff8c2a;
+    text-shadow: 0 2px 8px rgba(0,0,0,0.4);
+    margin-bottom: 30px;
+    text-align: center;
+  }
+
+  .subtitle {
+    font-size: 0.85rem;
+    color: #cc7020;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    margin-bottom: 30px;
+  }
+
+  .timer-display {
+    font-size: 6rem;
+    font-weight: 300;
+    font-variant-numeric: tabular-nums;
+    color: #ffe0c0;
+    text-shadow: 0 0 30px rgba(255, 140, 42, 0.3);
+    margin-bottom: 10px;
+    min-height: 100px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: color 0.3s;
+  }
+
+  .timer-display.done {
+    color: #ff8c2a;
+    animation: glow 1s ease-in-out 3;
+  }
+
+  @keyframes glow {
+    0%, 100% { text-shadow: 0 0 30px rgba(255, 140, 42, 0.3); }
+    50% { text-shadow: 0 0 50px rgba(255, 140, 42, 0.8), 0 0 80px rgba(255, 140, 42, 0.4); }
+  }
+
+  .brewing-label {
+    font-size: 1rem;
+    color: #cc7020;
+    margin-bottom: 30px;
+    min-height: 24px;
+    letter-spacing: 0.1em;
+  }
+
+  .buttons-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    max-width: 400px;
+    width: 100%;
+    margin-bottom: 20px;
+  }
+
+  .brew-btn {
+    background: linear-gradient(145deg, #2a2a42, #222238);
+    border: 1.5px solid #ff8c2a;
+    border-radius: 12px;
+    color: #f0e6d3;
+    padding: 16px 10px;
+    font-family: 'Georgia', serif;
+    font-size: 1.4rem;
+    font-weight: bold;
+    color: #ff8c2a;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-align: center;
+    line-height: 1.4;
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+  }
+
+  .brew-btn:hover {
+    background: linear-gradient(145deg, #3a3a55, #2a2a42);
+    border-color: #ff8c2a;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+  }
+
+  .brew-btn:active {
+    transform: translateY(1px);
+    box-shadow: none;
+  }
+
+  .brew-btn.active {
+    border-color: #ff8c2a;
+    background: linear-gradient(145deg, #3a3a55, #2a2a42);
+    box-shadow: 0 0 20px rgba(255, 140, 42, 0.2);
+  }
+
+  .brew-btn .brew-number {
+    font-size: 1.6rem;
+    font-weight: bold;
+    color: #ff8c2a;
+    display: block;
+    margin-bottom: 4px;
+  }
+
+  .brew-btn .brew-time {
+    font-size: 0.8rem;
+    color: #cc7020;
+  }
+
+  .stop-btn {
+    background: linear-gradient(145deg, #3a3a55, #2a2a42);
+    border: 1.5px solid #cc7020;
+    border-radius: 12px;
+    color: #ffa050;
+    padding: 14px 40px;
+    font-family: 'Georgia', serif;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+    letter-spacing: 0.1em;
+    margin-top: 5px;
+  }
+
+  .stop-btn:hover {
+    background: linear-gradient(145deg, #44445e, #3a3a55);
+    border-color: #ff8c2a;
+  }
+
+  .stop-btn:active {
+    transform: translateY(1px);
+  }
+
+  .tea-leaf {
+    position: fixed;
+    opacity: 0.04;
+    font-size: 3rem;
+    pointer-events: none;
+  }
+  .tea-leaf:nth-child(1) { top: 10%; left: 5%; transform: rotate(30deg); }
+  .tea-leaf:nth-child(2) { top: 70%; right: 8%; transform: rotate(-20deg); }
+  .tea-leaf:nth-child(3) { bottom: 15%; left: 15%; transform: rotate(60deg); }
+
+  @media (max-width: 420px) {
+    h1 { font-size: 1.5rem; }
+    .timer-display { font-size: 4.5rem; }
+    .buttons-grid { gap: 8px; }
+    .brew-btn { padding: 12px 8px; font-size: 1.2rem; }
+  }
+</style>
+</head>
+<body>
+
+<div class="tea-leaf">🍃</div>
+<div class="tea-leaf">🍃</div>
+<div class="tea-leaf">🍃</div>
+
+<h1>Multi-Purpose Tea Timer</h1>
+
+<div class="timer-display" id="timerDisplay">0:00</div>
+<div class="brewing-label" id="brewingLabel"></div>
+
+<div class="buttons-grid">
+  <button class="brew-btn" onclick="startTimer(10, 1)" id="btn1">10 sec</button>
+  <button class="brew-btn" onclick="startTimer(20, 2)" id="btn2">20 sec</button>
+  <button class="brew-btn" onclick="startTimer(30, 3)" id="btn3">30 sec</button>
+  <button class="brew-btn" onclick="startTimer(40, 4)" id="btn4">40 sec</button>
+  <button class="brew-btn" onclick="startTimer(50, 5)" id="btn5">50 sec</button>
+  <button class="brew-btn" onclick="startTimer(60, 6)" id="btn6">60 sec</button>
+</div>
+
+<button class="stop-btn" onclick="stopTimer()">Stop</button>
+
+<script>
+  let countdown = null;
+  let remaining = 0;
+  let audioCtx = null;
+
+  function getAudioContext() {
+    if (!audioCtx) {
+      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    }
+    return audioCtx;
+  }
+
+  function playChime() {
+    const ctx = getAudioContext();
+    const now = ctx.currentTime;
+
+    const frequencies = [523.25, 659.25, 783.99];
+
+    frequencies.forEach((freq, i) => {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(freq, now);
+
+      gain.gain.setValueAtTime(0, now + i * 0.08);
+      gain.gain.linearRampToValueAtTime(0.15, now + i * 0.08 + 0.05);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + i * 0.08 + 2.5);
+
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+
+      osc.start(now + i * 0.08);
+      osc.stop(now + i * 0.08 + 2.5);
+    });
+  }
+
+  function formatTime(seconds) {
+    const m = Math.floor(seconds / 60);
+    const s = seconds % 60;
+    return m + ':' + (s < 10 ? '0' : '') + s;
+  }
+
+  function clearActiveButtons() {
+    document.querySelectorAll('.brew-btn').forEach(b => b.classList.remove('active'));
+  }
+
+  function startTimer(seconds, brewNumber) {
+    getAudioContext();
+
+    if (countdown) clearInterval(countdown);
+
+    remaining = seconds;
+    const display = document.getElementById('timerDisplay');
+    const label = document.getElementById('brewingLabel');
+
+    display.classList.remove('done');
+    clearActiveButtons();
+    document.getElementById('btn' + brewNumber).classList.add('active');
+
+    label.textContent = 'Timer #' + brewNumber;
+    display.textContent = formatTime(remaining);
+
+    countdown = setInterval(() => {
+      remaining--;
+      display.textContent = formatTime(remaining);
+
+      if (remaining <= 0) {
+        clearInterval(countdown);
+        countdown = null;
+        display.classList.add('done');
+        label.textContent = 'Timer #' + brewNumber + ' — Done!';
+        playChime();
+      }
+    }, 1000);
+  }
+
+  function stopTimer() {
+    if (countdown) {
+      clearInterval(countdown);
+      countdown = null;
+    }
+    const display = document.getElementById('timerDisplay');
+    const label = document.getElementById('brewingLabel');
+    display.classList.remove('done');
+    display.textContent = '0:00';
+    label.textContent = '';
+    clearActiveButtons();
+  }
+</script>
+</body>
+</html>
